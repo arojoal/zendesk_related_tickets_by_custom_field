@@ -1,0 +1,17 @@
+{
+  "name": "RelatedTicketsByCustomField",
+  "author": {
+    "name": "Alex Rojo",
+    "email": "alex.rojo@hmobile.es",
+    "url": "https://www.linkedin.com/in/alexrojo/"
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "location": {
+    "support": {
+      "ticket_sidebar": "assets/iframe.html"
+    }
+  },
+  "version": "1.0",
+  "frameworkVersion": "2.0"
+}
