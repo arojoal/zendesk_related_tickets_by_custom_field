@@ -5,34 +5,64 @@
   <link rel="stylesheet" href="https://assets.zendesk.com/apps/sdk-assets/css/0/zendesk_garden.css" type="text/css">
 </head>
 <body>
-  <h2 class="u-gamma">Hello, World!</h2>
+  <h2 class="u-gamma">Tickets del hotel</h2>
+  <section data-main>Loading...</section>
   <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
   <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
   <script>
     // Initialise the Zendesk JavaScript API client
     // https://developer.zendesk.com/apps/docs/apps-v2
     var client = ZAFClient.init();
-    client.invoke('resize', { width: '100%', height: '200px' });
-    client.get('ticket.requester.name').then(function(data) {
-      console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
-    });
-    client.get('ticket.customField:custom_field_33525369').then(function(data) {
-      var hotel = data['ticket.customField:custom_field_33525369'];
-      console.log(hotel);
-      //console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
-      //search.json?query=tags:premium_support
-      var fetchSelf = {
-        url: '/api/v2/search.json?query=tags:' + hotel,
-        type: 'GET',
-        dataType: 'json'
-      };
-      var client = ZAFClient.init();
-      client.request(fetchSelf).then(function(data2) {
-        console.dir(data2);
+
+    function renderText(text) {
+      var mainSectionEl = document.querySelector('section[data-main]');
+      mainSectionEl.innerText = text;
+    }
+
+    function getCurrentUser() {
+      return client.get('currentUser').then(function(data) {
+        return data['currentUser'];
       });
-    });
+    }
+
+    function init() {
+      getCurrentUser().then(function(currentUser) {
+        renderText('Hi ' + currentUser.name + ', please make some changes to the ticket.');
+        client.on('*.changed', function(evt) {
+          var text = currentUser.name + ' changed ' +
+            evt.propertyName + ' to ' + evt.newValue + '.';
+          renderText(text);
+        });
+      });
+
+      client.get('ticket.requester.name').then(function(data) {
+        console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
+      });
+      client.get('ticket.customField:custom_field_33525369').then(function(data) {
+        var hotel = data['ticket.customField:custom_field_33525369'];
+        console.log(hotel);
+        //console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
+        //search.json?query=tags:premium_support
+        var fetchSelf = {
+          url: '/api/v2/search.json?query=tags:' + hotel + ' order_by:updated_at sort:desc',
+          type: 'GET',
+          dataType: 'json'
+        };
+        var client = ZAFClient.init();
+        client.request(fetchSelf).then(function(data2) {
+          console.dir(data2);
+        });
+      });
+    }
+
+//    client.on('app.registered', function() {
+      client.invoke('resize', { width: '100%', height: '80px' });
+      init();
+//    });
+
+
     // https://developer.zendesk.com/apps/docs/apps-v2/using_sdk#working-with-requests
-    var fetchSelf = {
+    /*var fetchSelf = {
       url: '/api/v2/users/me.json',
       type: 'GET',
       dataType: 'json'
@@ -40,7 +70,7 @@
     var client = ZAFClient.init();
     client.request(fetchSelf).then(function(data) {
       console.dir(data);
-    });
+    });*/
 
 
   </script>
