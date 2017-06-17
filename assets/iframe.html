@@ -3,14 +3,49 @@
   <meta charset="utf-8">
   <!-- http://garden.zendesk.com -->
   <link rel="stylesheet" href="https://assets.zendesk.com/apps/sdk-assets/css/0/zendesk_garden.css" type="text/css">
+  <!--link href="main.css" rel="stylesheet"-->
 </head>
 <body>
   <h2 class="u-gamma" data-main>Loading...</h2>
   <section data-main></section>
+  <div id="content"></div>
+
   <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+  <script src="https://cdn.jsdelivr.net/jquery/3.0.0/jquery.min.js"></script>
   <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
-  <script>
-    // Initialise the Zendesk JavaScript API client
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+  <!--script type="text/javascript" src="main.js"-->
+
+  <script id="tickets-template" type="text/x-handlebars-template">
+    <div>
+      {{#if tickets}}
+        <table class="table table-condensed">
+          <tbody>
+            {{#each tickets}}
+
+              <tr>
+                <td>#{{id}}: <a class="related-ticket-link" data-ticket-id={{id}} href="{{../base_url}}/agent/tickets/{{id}}">{{subject}}</a></td>
+              </tr>
+
+              {{#if ../preview_enabled}}
+              <tr class="preview">
+                <td>{{description}}</td>
+              </tr>
+              {{/if}}
+
+            {{/each}}
+          </tbody>
+        </table>
+      {{else}}
+        <div>{{t "global.no_results"}}</div>
+      {{/if}}
+    </div>
+  </script>
+
+
+  <script type="text/javascript">
+  $(function() {
+   // Initialise the Zendesk JavaScript API client
     // https://developer.zendesk.com/apps/docs/apps-v2
     var client = ZAFClient.init();
 
@@ -38,13 +73,19 @@
     function renderTicketsTable(tickets){
       if(tickets.count<1){return};
       //console.log(tickets.results);
-      html = '<div><table class="table table-condensed"><tbody>';
+      /*html = '<div><table class="table table-condensed"><tbody>';
       tickets.results.forEach(function(ticket, index) {
         console.log(ticket);
         html = html + renderTicket(ticket);
       });
       html = html + '</tbody></table>';
-      renderHtml(html);
+      renderHtml(html);*/
+
+      var source = $("#tickets-template").html();
+      var template = Handlebars.compile(source);
+      var data = { 'tickets': tickets.results };
+      var html = template(data);
+      $("#content").html(html);
     }
 
     function renderTicket(ticket){
@@ -84,7 +125,6 @@
           type: 'GET',
           dataType: 'json'
         };
-        var client = ZAFClient.init();
         client.request(fetchSelf).then(function(data2) {
           //console.dir(data2);
           renderTitle('Tickets related to ' +  hotel + ': ' + data2.count);
@@ -97,6 +137,10 @@
     client.metadata().then(function(metadata) {
       init(metadata);
     });
-  </script>
+  });    
+      </script>
+
+  
+
 </body>
 </html>
