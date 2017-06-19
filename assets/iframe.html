@@ -78,15 +78,6 @@
       var base_url = url_data["protocol"] + '//' + url_data["hostname"];
       console.log("base_url:" + base_url);
 
-      //console.log(tickets.results);
-      /*html = '<div><table class="table table-condensed"><tbody>';
-      tickets.results.forEach(function(ticket, index) {
-        console.log(ticket);
-        html = html + renderTicket(ticket);
-      });
-      html = html + '</tbody></table>';
-      renderHtml(html);*/
-
       var source = $("#tickets-template").html();
       var template = Handlebars.compile(source);
       var data = { 'tickets': tickets.results, 'base_url': base_url };
@@ -94,10 +85,10 @@
       $("#content").html(html);
       $('a.related-ticket-link').on('click', function(e) {
           e.preventDefault();
-          console.log("event:");
-          console.log(e);
+          /*console.log("event:");
+          console.log(e);*/
           var ticketId = $(this).data('ticket-id');
-          console.log("ticketID: " + ticketId);
+          //console.log("ticketID: " + ticketId);
           if (ticketId ){
             client.invoke('routeTo', 'ticket', ticketId);
           }
@@ -125,19 +116,6 @@
           hash: match[7]
       }
     }
-
-    /*function onRelatedTicketLinkClicked: function(e) {
-      e.preventDefault();
-
-      console.log(e);
-
-      /*if (e.target.dataset && e.target.dataset.ticketId) {
-        const client = this.zafClient;
-
-        client.invoke('routeTo', 'ticket', e.target.dataset.ticketId);
-      }
-    }*/
-
 
     function init(metadata) {
 
