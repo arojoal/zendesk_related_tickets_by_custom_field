@@ -6,3 +6,11 @@
 .table tr:first-child td {
   border-top: none;
 }
+
+body,table {
+	font-size: 14px;
+}
+
+h3 {
+    font-size: 14px;
+}
