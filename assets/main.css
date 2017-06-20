@@ -14,3 +14,9 @@ body,table {
 h3 {
     font-size: 14px;
 }
+
+.table .preview td {
+  border-top: none;
+  padding-top: 0;
+  font-size: 12px;
+}

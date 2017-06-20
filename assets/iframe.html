@@ -117,15 +117,18 @@
       }
     }
 
-    function init(metadata) {
+    function handleTicketUpdated() {
+      console.log("TICKET UPDATED");
+    }
 
-      settings = metadata.settings
+    function searchAndShow(settings){
       console.log("custom_field_id: " + settings.custom_field_id);
-
       key = 'ticket.customField:custom_field_' + settings.custom_field_id;
       client.get(key).then(function(data) {
         var hotel = data[key];
         console.log(hotel);
+        renderTitle('Searching...  ' +  hotel);
+        $("#content").html("");
         //console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
         //search.json?query=tags:premium_support
         var fetchSelf = {
@@ -138,7 +141,22 @@
           renderTitle('Tickets related to ' +  hotel + ': ' + data2.count);
           renderTicketsTable( data2 );
         });
+      });      
+    }
+
+    function init(metadata) {
+
+      settings = metadata.settings
+
+      searchAndShow(settings);
+      client.on('ticket.custom_field_' + settings.custom_field_id + '.changed', function() {
+        console.log("TICKET custom field UPDATED");
+        settings = metadata.settings
+
+        searchAndShow(settings);
+        return true;
       });
+
     }
 
     client.invoke('resize', { width: '100%', height: '280px' });
