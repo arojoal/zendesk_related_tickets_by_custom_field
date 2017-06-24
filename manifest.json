@@ -6,7 +6,7 @@
     "url": "https://www.linkedin.com/in/alexrojo/"
   },
   "defaultLocale": "en",
-  "private": true,
+  "private": false,
   "location": {
     "support": {
       "ticket_sidebar": "assets/iframe.html"
