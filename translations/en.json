@@ -10,10 +10,7 @@
   },
   "parameters": {
     "custom_field_id": {
-      "label": {
-        "title": "ID of the custom field to be used to get related tickets. Get Custom Field Id for the custom field you want the app to use. You can get the ID from your Zendesk Support -> Admin Home -> Ticket Fileds -> Field -> Edit",
-        "value": ""
-      }
+      "label": "ID of the custom field to be used to get related tickets. Get Custom Field Id for the custom field you want the app to use. You can get the ID from your Zendesk Support -> Admin Home -> Ticket Fileds -> Field -> Edit"
     }
   },
   "id": "ID",
