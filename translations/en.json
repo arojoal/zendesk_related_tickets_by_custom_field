@@ -1,17 +1,17 @@
 {
   "app": {
     "description": "A Zendesk app that shows a list of tickets that have the same Custom Field value as the current ticket being viewed.",
-    "name": "Buddha Machine"
+    "name": "Related Tickets by Custom Field",
+  "parameters": {
+    "custom_field_id": {
+      "label": "ID of the custom field to be used to get related tickets. Get Custom Field Id for the custom field you want the app to use. You can get the ID from your Zendesk Support -> Admin Home -> Ticket Fileds -> Field -> Edit"
+    }
+  }
   },
   "loading": "Welcome to this Sample App",
   "fetch": {
     "done": "Good",
     "fail": "failed to fetch information from the server"
-  },
-  "parameters": {
-    "custom_field_id": {
-      "label": "ID of the custom field to be used to get related tickets. Get Custom Field Id for the custom field you want the app to use. You can get the ID from your Zendesk Support -> Admin Home -> Ticket Fileds -> Field -> Edit"
-    }
   },
   "id": "ID",
   "email": "Email",
