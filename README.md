@@ -1,14 +1,9 @@
 # App name
 
-[brief description of the app]
+A Zendesk app that shows a list of tickets that have the same Custom Field value as the current ticket being viewed. Custom Field to be used is a configuration parameter of the app.
 
 ### The following information is displayed:
 
-* info1
-* info2
-* info3
-
-Please submit bug reports to [Insert Link](). Pull requests are welcome.
 
 ### Screenshot(s):
 [put your screenshots down here.]
