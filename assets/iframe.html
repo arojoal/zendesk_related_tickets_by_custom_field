@@ -76,7 +76,7 @@
       var first = tickets.results[0];
       var url_data = getLocation(first.url);
       var base_url = url_data["protocol"] + '//' + url_data["hostname"];
-      console.log("base_url:" + base_url);
+      //console.log("base_url:" + base_url);
 
       var source = $("#tickets-template").html();
       var template = Handlebars.compile(source);
@@ -118,15 +118,15 @@
     }
 
     function handleTicketUpdated() {
-      console.log("TICKET UPDATED");
+      //console.log("TICKET UPDATED");
     }
 
     function searchAndShow(settings){
-      console.log("custom_field_id: " + settings.custom_field_id);
+      //console.log("custom_field_id: " + settings.custom_field_id);
       key = 'ticket.customField:custom_field_' + settings.custom_field_id;
       client.get(key).then(function(data) {
         var hotel = data[key];
-        console.log(hotel);
+        //console.log(hotel);
         renderTitle('Searching...  ' +  hotel);
         $("#content").html("");
         //console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
@@ -150,7 +150,7 @@
 
       searchAndShow(settings);
       client.on('ticket.custom_field_' + settings.custom_field_id + '.changed', function() {
-        console.log("TICKET custom field UPDATED");
+        // console.log("TICKET custom field UPDATED");
         settings = metadata.settings
 
         searchAndShow(settings);
