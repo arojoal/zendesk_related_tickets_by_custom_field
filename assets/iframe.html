@@ -45,6 +45,8 @@
 
 
   <script type="text/javascript">
+  var ticket_field_info = null;
+  var shown_ticket_id = null;
   $(function() {
    // Initialise the Zendesk JavaScript API client
     // https://developer.zendesk.com/apps/docs/apps-v2
@@ -72,15 +74,15 @@
     }
 
     function renderTicketsTable(tickets){
-      if(tickets.count<1){return};
-      var first = tickets.results[0];
+      if(tickets.length<1){return};
+      var first = tickets[0];
       var url_data = getLocation(first.url);
       var base_url = url_data["protocol"] + '//' + url_data["hostname"];
       //console.log("base_url:" + base_url);
 
       var source = $("#tickets-template").html();
       var template = Handlebars.compile(source);
-      var data = { 'tickets': tickets.results, 'base_url': base_url };
+      var data = { 'tickets': tickets, 'base_url': base_url };
       var html = template(data);
       $("#content").html(html);
       $('a.related-ticket-link').on('click', function(e) {
@@ -93,7 +95,6 @@
             client.invoke('routeTo', 'ticket', ticketId);
           }
       });
-
     }
 
     function renderTicket(ticket){
@@ -124,6 +125,8 @@
     function searchAndShow(settings){
       //console.log("custom_field_id: " + settings.custom_field_id);
       key = 'ticket.customField:custom_field_' + settings.custom_field_id;
+      //console.log("TIKET FIELD INFO: ");
+      //console.dir(ticket_field_info);
       client.get(key).then(function(data) {
         var hotel = data[key];
         //console.log(hotel);
@@ -131,24 +134,63 @@
         $("#content").html("");
         //console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
         //search.json?query=tags:premium_support
-        var fetchSelf = {
-          url: '/api/v2/search.json?query=tags:' + hotel + ' order_by:updated_at sort:desc',
-          type: 'GET',
-          dataType: 'json'
-        };
-        client.request(fetchSelf).then(function(data2) {
-          //console.dir(data2);
-          renderTitle('Tickets related to ' +  hotel + ': ' + data2.count);
-          renderTicketsTable( data2 );
-        });
-      });      
+        var url = "";
+        if(ticket_field_info.ticket_field.type == "tagger"){
+            url = '/api/v2/search.json?query=tags:' + hotel + ' order_by:updated_at sort:desc';
+        }else if(ticket_field_info.ticket_field.type == "text" || ticket_field_info.ticket_field.type == "textarea"){
+          url = '/api/v2/search.json?query=' + hotel + ' type:ticket order_by:updated_at sort:desc';
+        }else {
+          //console.log("UNSUPPORTED TICKECT FIELD TYPE: " + ticket_field_info.ticket_field.type)
+          renderTitle("UNSUPPORTED TICKECT FIELD TYPE: " + ticket_field_info.ticket_field.type);
+        }
+        if( url != ""){
+          var fetchSelf = {
+            url: url,
+            type: 'GET',
+            dataType: 'json'
+          };
+            client.get("ticket.id").then(function(data3) {
+              shown_ticket_id = data3["ticket.id"];
+              //console.log("SHOWN_TICKET ID: " + shown_ticket_id);
+              client.request(fetchSelf).then(function(data2) {
+              //console.dir(data2);
+              var tickets = [];
+              for(i=0; i<data2.results.length; i++){
+                if(data2.results[i].id != shown_ticket_id){
+                  tickets.push(data2.results[i]);
+                }
+              }
+
+              renderTitle('Tickets related to ' +  hotel + ': ' + tickets.length);
+              renderTicketsTable( tickets );
+            });
+          });
+        }
+      });
+    }
+
+    function getTicketFieldInfoAndSearch(settings){
+      //console.log("custom_field_id: " + settings.custom_field_id);
+      var fetchSelf = {
+        url: '/api/v2/ticket_fields/' + settings.custom_field_id,
+        type: 'GET',
+        dataType: 'json'
+      };
+      client.request(fetchSelf).then(function(data2) {
+        setTicketFieldInfo(data2);
+        searchAndShow(settings);
+      });
+    }
+
+    function setTicketFieldInfo(data2){
+      ticket_field_info = data2;
     }
 
     function init(metadata) {
-
       settings = metadata.settings
 
-      searchAndShow(settings);
+      getTicketFieldInfoAndSearch(settings);
+
       client.on('ticket.custom_field_' + settings.custom_field_id + '.changed', function() {
         // console.log("TICKET custom field UPDATED");
         settings = metadata.settings
