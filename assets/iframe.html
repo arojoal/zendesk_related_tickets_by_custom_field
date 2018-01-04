@@ -141,7 +141,7 @@
           url = '/api/v2/search.json?query=' + hotel + ' type:ticket order_by:updated_at sort:desc';
         }else {
           //console.log("UNSUPPORTED TICKECT FIELD TYPE: " + ticket_field_info.ticket_field.type)
-          renderTitle("UNSUPPORTED TICKECT FIELD TYPE: " + ticket_field_info.ticket_field.type);
+          renderTitle("UNSUPPORTED TICKET FIELD TYPE: " + ticket_field_info.ticket_field.type);
         }
         if( url != ""){
           var fetchSelf = {
