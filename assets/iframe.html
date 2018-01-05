@@ -137,7 +137,7 @@
         var url = "";
         if(ticket_field_info.ticket_field.type == "tagger"){
             url = '/api/v2/search.json?query=tags:' + hotel + ' order_by:updated_at sort:desc';
-        }else if(ticket_field_info.ticket_field.type == "text" || ticket_field_info.ticket_field.type == "textarea" || ticket_field_info.ticket_field.type == "regexp"){
+        }else if(ticket_field_info.ticket_field.type == "text" || ticket_field_info.ticket_field.type == "textarea" || ticket_field_info.ticket_field.type == "regexp"  || ticket_field_info.ticket_field.type == "integer" || ticket_field_info.ticket_field.type == "decimal"){
           url = '/api/v2/search.json?query=' + hotel + ' type:ticket order_by:updated_at sort:desc';
         }else {
           //console.log("UNSUPPORTED TICKECT FIELD TYPE: " + ticket_field_info.ticket_field.type)
