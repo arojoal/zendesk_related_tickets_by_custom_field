@@ -2,11 +2,11 @@
   "app": {
     "description": "Show a list of tickets with the same Custom Field value as current ticket",
     "name": "Related Tickets by Custom Field",
-    "installation_instructions": "Get custom_field id you want to use as reference from Settings -> Ticket Fields and introduce it at app configuration form.",
+    "installation_instructions": "Get custom_field id you want to use as reference from Settings -> Ticket Fields and introduce it at app configuration form. You can also use the word 'requester' as 'id' if you want to get tickets submitted by the same person.",
     "long_description": "A Zendesk app that shows a list of tickets that have the same Custom Field value as the current ticket being viewed. Custom Field to be used is a configuration parameter of the app.",
   "parameters": {
     "custom_field_id": {
-      "label": "ID of the custom field to be used to get related tickets. Get Custom Field Id for the custom field you want the app to use. You can get the ID from your Zendesk Support -> Admin Home -> Ticket Fileds -> Field -> Edit"
+      "label": "ID of the custom field to be used to get related tickets. Get Custom Field Id for the custom field you want the app to use. You can get the ID from your Zendesk Support -> Admin Home -> Ticket Fileds -> Field -> Edit. You can also use the word 'requester' as 'id' if you want to get tickets submitted by the same person."
     }
   }
   },
