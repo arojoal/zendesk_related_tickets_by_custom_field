@@ -127,24 +127,27 @@
       key = 'ticket.customField:custom_field_' + settings.custom_field_id;
       //console.log("custom_field_id: " + settings.custom_field_id);
       if( settings.custom_field_id == 'requester'){
-        key = 'ticket.requester.email'
+        key = 'ticket.requester.email';
+      }else if ( settings.custom_field_id == 'organization' ){
+        key = 'ticket.organization.name';
       }
+      //console.log("KEY: " + key);
       //console.log("TIKET FIELD INFO: ");
       //console.dir(ticket_field_info);
       client.get(key).then(function(data) {
-        var hotel = data[key];
-        //console.log(hotel);
-        renderTitle('Searching...  ' +  hotel);
+        var search_value = data[key];
+        //console.log(search_value);
+        renderTitle('Searching...  ' +  search_value);
         $("#content").html("");
-        console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
+        //console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
         //search.json?query=tags:premium_support
         var url = "";
-        if( settings.custom_field_id == 'requester'){
-          url = '/api/v2/search.json?query=submitter:' + hotel + ' order_by:updated_at sort:desc';
+        if( settings.custom_field_id == 'requester' || settings.custom_field_id == 'organization'){
+          url = '/api/v2/search.json?query=' + settings.custom_field_id +':' + search_value + ' order_by:updated_at sort:desc';
         }else if(ticket_field_info.ticket_field.type == "tagger"){
-            url = '/api/v2/search.json?query=tags:' + hotel + ' order_by:updated_at sort:desc';
+            url = '/api/v2/search.json?query=tags:' + search_value + ' order_by:updated_at sort:desc';
         }else if(ticket_field_info.ticket_field.type == "text" || ticket_field_info.ticket_field.type == "textarea" || ticket_field_info.ticket_field.type == "regexp"  || ticket_field_info.ticket_field.type == "integer" || ticket_field_info.ticket_field.type == "decimal"){
-          url = '/api/v2/search.json?query=' + hotel + ' type:ticket order_by:updated_at sort:desc';
+          url = '/api/v2/search.json?query=' + search_value + ' type:ticket order_by:updated_at sort:desc';
         }else {
           //console.log("UNSUPPORTED TICKECT FIELD TYPE: " + ticket_field_info.ticket_field.type)
           renderTitle("UNSUPPORTED TICKET FIELD TYPE: " + ticket_field_info.ticket_field.type);
@@ -163,11 +166,16 @@
               var tickets = [];
               for(i=0; i<data2.results.length; i++){
                 if(data2.results[i].id != shown_ticket_id){
-                  tickets.push(data2.results[i]);
+                  if(data2.results[i].subject != undefined ){
+                    tickets.push(data2.results[i]);
+                  }else{
+                    //console.log("NO ES TICKET: "); 
+                    //console.log(data2.results[i]);
+                  }
                 }
               }
 
-              renderTitle('Tickets related to ' +  hotel + ': ' + tickets.length);
+              renderTitle('Tickets related to ' +  search_value + ': ' + tickets.length);
               renderTicketsTable( tickets );
             });
           });
@@ -182,7 +190,7 @@
         type: 'GET',
         dataType: 'json'
       };
-      if( settings.custom_field_id != 'requester' ){
+      if( settings.custom_field_id != 'requester' &&  settings.custom_field_id != 'organization'){
         client.request(fetchSelf).then(function(data2) {
           setTicketFieldInfo(data2);
           searchAndShow(settings);
