@@ -7,8 +7,14 @@
   "parameters": {
     "custom_field_id": {
       "label": "ID of the custom field to be used to get related tickets. Get Custom Field Id for the custom field you want the app to use. You can get the ID from your Zendesk Support -> Admin Home -> Ticket Fileds -> Field -> Edit. You can also use the word 'requester' or 'organization' as 'id' if you want to get tickets requested by the same person or organization."
+    },
+    "show_ticket_status": {
+        "label": "Enable show each related ticket's status"
+      },
+    "show_ticket_updatedat": {
+        "label": "Enable show each related ticket last update date and time"
+      }      
     }
-  }
   },
   "loading": "Welcome to this Sample App",
   "fetch": {

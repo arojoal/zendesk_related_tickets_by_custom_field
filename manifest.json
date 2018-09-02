@@ -18,8 +18,22 @@
       "type": "text",
       "required": true,
       "secure": false
+    },
+    {
+      "name": "show_ticket_status",
+      "type": "checkbox",
+      "required": true,
+      "default": true,
+      "secure": false
+    },
+    {
+      "name": "show_ticket_updatedat",
+      "type": "checkbox",
+      "required": false,
+      "default": false,
+      "secure": false
     }
   ],
-  "version": "1.4",
+  "version": "1.5",
   "frameworkVersion": "2.0"
 }
