@@ -29,11 +29,11 @@
     {
       "name": "show_ticket_updatedat",
       "type": "checkbox",
-      "required": false,
+      "required": false ,
       "default": false,
       "secure": false
     }
   ],
-  "version": "1.5",
+  "version": "1.6",
   "frameworkVersion": "2.0"
 }

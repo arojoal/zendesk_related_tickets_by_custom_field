@@ -1,3 +1,23 @@
+
+.c-label, .c-label:hover {
+    color: #fff;
+}
+
+.c-label {
+    display: inline-block;
+    transition: box-shadow .1s ease-in-out;
+    border: 0;
+    border-radius: 2px;
+    background-color: #30aabc;
+    padding: 0 .83333em;
+    height: 20px;
+    text-decoration: none;
+    line-height: 1.66667;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 400;
+}
+
 .table {
   table-layout: fixed;
   word-wrap: break-word;
@@ -19,4 +39,47 @@ h3 {
   border-top: none;
   padding-top: 0;
   font-size: 12px;
+}
+
+.results-table {
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+.results-table tr:first-child td {
+  border-top: none;
+}
+
+.results-table .ticket-preview td {
+  border-top: none;
+  padding: 0 0 10px;
+  word-break: break-word;
+}
+
+.ticket-status-new {
+  background-color: #f5ca00;
+}
+
+.ticket-status-open {
+  background-color: #e82a2a;
+}
+
+.ticket-status-pending {
+  background-color: #59bbe0;
+}
+
+.ticket-status-hold {
+  background-color: #000;
+}
+
+.ticket-status-solved {
+  background-color: #828282;
+}
+
+.ticket-status-closed {
+  background-color: #ddd;
+}
+
+.c-label--pill {
+    border-radius: 100px;
 }

@@ -24,13 +24,14 @@
           <tbody>
             {{#each tickets}}
               <tr>
-                <td width="10%">#{{id}}:</td><td min-width="50%"><a class="related-ticket-link" data-ticket-id={{id}} href="#" data-url="{{../base_url}}/agent/tickets/{{id}}">{{subject}}</a></td>
+                <td width="80%"><span class="ticket-id">#{{id}}: </span><a class="related-ticket-link" data-ticket-id={{id}} href="#" data-url="{{../base_url}}/agent/tickets/{{id}}">{{subject}}</a>
                   {{#if ../show_ticket_status}}
-                    <td width="20%">{{status}}</td>
+                    <span class="c-label c-label--pill ticket-status-{{status}}">{{status}}</span>
                   {{/if}}
                   {{#if ../show_ticket_updatedat}}
-                    <td width="20%">{{updated_at}}</td>
+                    ({{updated_at}})
                   {{/if}}
+                  </td>
               </tr>
 
               {{#if ../preview_enabled}}
