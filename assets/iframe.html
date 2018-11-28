@@ -150,6 +150,10 @@
         //console.log(search_value);
         renderTitle('Searching...  ' +  search_value);
         $("#content").html("");
+        if (!search_value){
+          renderTitle('No value to search for...');
+          return false;
+        }
         //console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
         //search.json?query=tags:premium_support
         var url = "";
