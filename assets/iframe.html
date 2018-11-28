@@ -29,7 +29,7 @@
                     <span class="c-label c-label--pill ticket-status-{{status}}">{{status}}</span>
                   {{/if}}
                   {{#if ../show_ticket_updatedat}}
-                    ({{updated_at}})
+                    ({{showDate updated_at}})
                   {{/if}}
                   </td>
               </tr>
@@ -51,6 +51,12 @@
 
 
   <script type="text/javascript">
+
+  Handlebars.registerHelper("showDate", function(iso_date) {
+    var d = new Date(iso_date);
+    return d.toLocaleDateString().replace(/\//g,'-');
+  })
+
   var ticket_field_info = null;
   var shown_ticket_id = null;
   $(function() {
