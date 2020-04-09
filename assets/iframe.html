@@ -57,10 +57,10 @@
     return d.toLocaleDateString().replace(/\//g,'-');
   })
 
-  var ticket_field_info_array = new Array(2);
+  var ticket_field_info_array = new Array(3);
   var shown_ticket_id = null;
-  var keys_array = new Array(2);
-  var search_values_array = new Array(2);
+  var keys_array = new Array(3);
+  var search_values_array = new Array(3);
 
   $(function() {
    // Initialise the Zendesk JavaScript API client
@@ -312,7 +312,7 @@
     }
 
     function initCustomFieldIds(settings){
-      return [settings.custom_field_id, settings.custom_field_id_2];
+      return [settings.custom_field_id, settings.custom_field_id_2,  settings.custom_field_id_3];
     }
 
     function init(metadata) {

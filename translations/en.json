@@ -3,11 +3,17 @@
     "description": "Show a list of tickets with the same Custom Field value as current ticket",
     "name": "Related Tickets by Custom Field",
     "installation_instructions": "Get custom_field id you want to use as reference from Settings -> Ticket Fields and introduce it at app configuration form. You can also use the word 'requester' as 'id' if you want to get tickets submitted by the same person.",
-    "long_description": "A Zendesk app that shows a list of tickets that have the same Custom Field value as the current ticket being viewed. Custom Field to be used is a configuration parameter of the app.",
+    "long_description": "A Zendesk app that shows a list of tickets that have the same Custom Field(s) value(s) as the current ticket being viewed. Custom Field(s) to be used are configuration parameters of the app.",
   "parameters": {
     "custom_field_id": {
       "label": "ID of the custom field to be used to get related tickets. Get Custom Field Id for the custom field you want the app to use. You can get the ID from your Zendesk Support -> Admin Home -> Ticket Fileds -> Field -> Edit. You can also use the word 'requester' or 'organization' as 'id' if you want to get tickets requested by the same person or organization."
     },
+    "custom_field_id_2": {
+      "label": "OPTIONAL: ID of the second field to be used to get related tickets. If more than one field are defined, related tickets will be found by looking for tickets with same field1_value AND field2_value as current ticket."
+    },
+    "custom_field_id_3": {
+      "label": "OPTIONAL: ID of the third field to be used to get related tickets. If more than two fields are defined, related tickets will be found by looking for tickets with same field1_value AND field2_value AND field3_value as current ticket."
+    },    
     "show_ticket_status": {
         "label": "Enable show each related ticket's status"
       },
@@ -16,7 +22,7 @@
       }      
     }
   },
-  "loading": "Welcome to this Sample App",
+  "loading": "Welcome to Related Tickets APP",
   "fetch": {
     "done": "Good",
     "fail": "failed to fetch information from the server"

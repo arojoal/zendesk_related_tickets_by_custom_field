@@ -26,6 +26,12 @@
       "secure": false
     },
     {
+      "name": "custom_field_id_3",
+      "type": "text",
+      "required": false,
+      "secure": false
+    },
+    {
       "name": "show_ticket_status",
       "type": "checkbox",
       "required": true,
