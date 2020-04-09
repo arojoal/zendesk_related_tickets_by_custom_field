@@ -20,6 +20,12 @@
       "secure": false
     },
     {
+      "name": "custom_field_id_2",
+      "type": "text",
+      "required": false,
+      "secure": false
+    },
+    {
       "name": "show_ticket_status",
       "type": "checkbox",
       "required": true,
@@ -34,6 +40,6 @@
       "secure": false
     }
   ],
-  "version": "1.7",
+  "version": "2.0",
   "frameworkVersion": "2.0"
 }

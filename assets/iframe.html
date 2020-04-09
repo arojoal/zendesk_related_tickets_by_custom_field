@@ -57,8 +57,11 @@
     return d.toLocaleDateString().replace(/\//g,'-');
   })
 
-  var ticket_field_info = null;
+  var ticket_field_info_array = new Array(2);
   var shown_ticket_id = null;
+  var keys_array = new Array(2);
+  var search_values_array = new Array(2);
+
   $(function() {
    // Initialise the Zendesk JavaScript API client
     // https://developer.zendesk.com/apps/docs/apps-v2
@@ -134,109 +137,214 @@
       //console.log("TICKET UPDATED");
     }
 
-    function searchAndShow(settings){
+    function doGetSearchValue(settings,custom_field_ids,field_idx){
+      var custom_field_id = custom_field_ids[field_idx];
       var key;
-      key = 'ticket.customField:custom_field_' + settings.custom_field_id;
-      //console.log("custom_field_id: " + settings.custom_field_id);
-      if( settings.custom_field_id == 'requester'){
+      key = 'ticket.customField:custom_field_' + custom_field_id;
+      //console.log("custom_field_id: " + custom_field_id);
+      if( custom_field_id == 'requester'){
         key = 'ticket.requester.email';
-      }else if ( settings.custom_field_id == 'organization' ){
+      }else if ( custom_field_id == 'organization' ){
         key = 'ticket.organization.name';
       }
-      //console.log("KEY: " + key);
-      //console.log("TIKET FIELD INFO: ");
-      //console.dir(ticket_field_info);
-
-      show_ticket_status = settings.show_ticket_status;
-      show_ticket_updatedat = settings.show_ticket_updatedat;
-      //console.log("show_ticket_status: " + show_ticket_status);
-
+      keys_array[field_idx] = key;
+      console.log("KEY: " + key);
       client.get(key).then(function(data) {
         var search_value = data[key];
-        //console.log(search_value);
-        renderTitle('Searching...  ' +  search_value);
-        $("#content").html("");
-        if (!search_value){
-          renderTitle('No value to search for...');
-          return false;
-        }
-        //console.log(data); // { "ticket.requester.name": "Mikkel Svane" }
-        //search.json?query=tags:premium_support
-        var url = "";
-        if( settings.custom_field_id == 'requester' || settings.custom_field_id == 'organization'){
-          url = '/api/v2/search.json?query=' + settings.custom_field_id +':' + search_value + ' order_by:updated_at sort:desc';
-        }else if(ticket_field_info.ticket_field.type == "tagger"){
-            url = '/api/v2/search.json?query=tags:' + search_value + ' order_by:updated_at sort:desc';
-        }else if(ticket_field_info.ticket_field.type == "text" || ticket_field_info.ticket_field.type == "textarea" || ticket_field_info.ticket_field.type == "regexp"  || ticket_field_info.ticket_field.type == "integer" || ticket_field_info.ticket_field.type == "decimal"){
-          url = '/api/v2/search.json?query=' + search_value + ' type:ticket order_by:updated_at sort:desc';
-        }else {
-          //console.log("UNSUPPORTED TICKECT FIELD TYPE: " + ticket_field_info.ticket_field.type)
-          renderTitle("UNSUPPORTED TICKET FIELD TYPE: " + ticket_field_info.ticket_field.type);
-        }
-        if( url != ""){
-          var fetchSelf = {
-            url: url,
-            type: 'GET',
-            dataType: 'json'
-          };
-            client.get("ticket.id").then(function(data3) {
-              shown_ticket_id = data3["ticket.id"];
-              //console.log("SHOWN_TICKET ID: " + shown_ticket_id);
-              client.request(fetchSelf).then(function(data2) {
-              //console.dir(data2);
-              var tickets = [];
-              for(i=0; i<data2.results.length; i++){
-                if(data2.results[i].id != shown_ticket_id){
-                  if(data2.results[i].subject != undefined ){
-                    tickets.push(data2.results[i]);
-                  }else{
-                    //console.log("NO ES TICKET: "); 
-                    //console.log(data2.results[i]);
-                  }
-                }
-              }
-
-              renderTitle('Tickets related to ' +  search_value + ': ' + tickets.length);
-              renderTicketsTable( tickets, show_ticket_status );
-            });
-          });
+        console.log(search_value);
+        search_values_array[field_idx] = search_value;
+        field_idx++;
+        if( thereAreMoreFieldsToProcess(custom_field_ids, field_idx) ){
+          doGetSearchValue(settings, custom_field_ids, field_idx);
+        }else{
+          onSearchValuesAvailable(settings, custom_field_ids);
         }
       });
     }
 
-    function getTicketFieldInfoAndSearch(settings){
-      //console.log("custom_field_id: " + settings.custom_field_id);
-      var fetchSelf = {
-        url: '/api/v2/ticket_fields/' + settings.custom_field_id,
-        type: 'GET',
-        dataType: 'json'
+    function getSearchQuery(settings, custom_field_ids, field_idx){
+      var query = "";
+      var custom_field_id = custom_field_ids[field_idx];
+      var ticket_field_info = ticket_field_info_array[field_idx];
+      var search_value = search_values_array[field_idx];
+
+      if( custom_field_id == 'requester' || custom_field_id == 'organization'){
+        query = custom_field_id +':' + search_value;
+      }else if(ticket_field_info.ticket_field.type == "tagger"){
+        query = search_value;
+      }else if(ticket_field_info.ticket_field.type == "text" || ticket_field_info.ticket_field.type == "textarea" || ticket_field_info.ticket_field.type == "regexp"  || ticket_field_info.ticket_field.type == "integer" || ticket_field_info.ticket_field.type == "decimal"){
+        query = "fieldvalue:" + search_value + ' type:ticket';
+      }else {
+        //console.log("UNSUPPORTED TICKECT FIELD TYPE: " + ticket_field_info.ticket_field.type)
+        renderTitle("UNSUPPORTED TICKET FIELD TYPE: " + ticket_field_info.ticket_field.type);
+        query = "";
+      }
+      return query;
+    }
+
+    function onSearchValuesAvailable(settings, custom_field_ids){
+      console.log("SEARCH_VALUES_ARRAY:");
+      console.log(search_values_array);
+
+      // get search values
+      var search_value = "";
+      for (var i = 0; i<custom_field_ids.length; i++) {
+        if( search_values_array[i] != undefined ){
+          if( search_value != "" ){ search_value = search_value + " + "}
+          search_value = search_value + search_values_array[i];
+        }
       };
-      if( settings.custom_field_id != 'requester' &&  settings.custom_field_id != 'organization'){
-        client.request(fetchSelf).then(function(data2) {
-          setTicketFieldInfo(data2);
-          searchAndShow(settings);
+      renderTitle('Searching...  ' +  search_value);
+      $("#content").html("");
+      if (search_value == ""){
+        renderTitle('No value to search for...');
+        return false;
+      }
+
+      //get search querys to use
+      query = "";
+      for (var i = 0; i<custom_field_ids.length; i++) {
+        if( search_values_array[i] != undefined ){
+          new_query = getSearchQuery(settings, custom_field_ids, i);
+          if( new_query != "" ){
+            if( query != "" ){ query = query + " "}
+            query = query + new_query;
+          }
+        }
+      };
+      console.log("query:" + query);
+
+      if( query == ""){
+        return false;
+      }
+
+      // send query and show results
+      show_ticket_status = settings.show_ticket_status;
+      show_ticket_updatedat = settings.show_ticket_updatedat;
+      console.log("show_ticket_status: " + show_ticket_status);
+
+      var url = '/api/v2/search.json?query=' + query + ' order_by:updated_at sort:desc';
+      if( url != ""){
+        var fetchSelf = {
+          url: url,
+          type: 'GET',
+          dataType: 'json'
+        };
+          client.get("ticket.id").then(function(data3) {
+            shown_ticket_id = data3["ticket.id"];
+            //console.log("SHOWN_TICKET ID: " + shown_ticket_id);
+            client.request(fetchSelf).then(function(data2) {
+            //console.dir(data2);
+            var tickets = [];
+            for(i=0; i<data2.results.length; i++){
+              if(data2.results[i].id != shown_ticket_id){
+                if(data2.results[i].subject != undefined ){
+                  tickets.push(data2.results[i]);
+                  console.log(data2.results[i]);
+                }else{
+                  //console.log("NO ES TICKET: "); 
+                  //console.log(data2.results[i]);
+                }
+              }
+            }
+
+            renderTitle('Tickets related to ' +  search_value + ': ' + tickets.length);
+            renderTicketsTable( tickets, show_ticket_status );
+          });
         });
-      }else{
-          searchAndShow(settings);        
       }
     }
 
-    function setTicketFieldInfo(data2){
-      ticket_field_info = data2;
+    function searchAndShow(settings,custom_field_ids){
+      console.log("SearchAndShow");
+      doGetSearchValue(settings, custom_field_ids, 0);
+      return true;
+    }
+
+    function getTicketFieldInfoAndSearch(settings, custom_field_ids){
+      console.log("custom_field_ids: " + custom_field_ids);
+
+      getAnSetTicketFieldInfoAndSearch(settings, custom_field_ids, 0);
+    }
+
+    function getAnSetTicketFieldInfoAndSearch(settings, custom_field_ids, field_idx){
+      console.log("custom_field_ids[" + field_idx + "]: " + custom_field_ids[field_idx]);
+      var fetchSelf = {
+        url: '/api/v2/ticket_fields/' + custom_field_ids[field_idx],
+        type: 'GET',
+        dataType: 'json'
+      };
+      if( custom_field_ids[field_idx] != 'requester' &&  custom_field_ids[field_idx] != 'organization'){
+        console.log("getting field_type_info");
+        client.request(fetchSelf).then(function(data2) {
+          console.log("data2:" + data2);
+          setTicketFieldInfo(data2, field_idx);
+          field_idx++;
+          if( thereAreMoreFieldsToProcess(custom_field_ids, field_idx) ){
+            console.log("next:" + field_idx);
+            getAnSetTicketFieldInfoAndSearch(settings, custom_field_ids, field_idx)
+          }else{
+            searchAndShow(settings, custom_field_ids);
+          }
+        });
+      }else{
+        console.log("field_type_info is requester or organization");
+          field_idx++;
+          if( thereAreMoreFieldsToProcess(custom_field_ids, field_idx) ){
+            console.log("next:" + field_idx);
+            getAnSetTicketFieldInfoAndSearch(settings, custom_field_ids, field_idx)
+          }else{
+            searchAndShow(settings, custom_field_ids);
+          }
+      }
+    }
+
+    function thereAreMoreFieldsToProcess(custom_field_ids, next_field_idx_to_process){
+      if ( next_field_idx_to_process < custom_field_ids.length && custom_field_ids[next_field_idx_to_process] != undefined ){
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function setTicketFieldInfo(data2, field_idx){
+      ticket_field_info_array[field_idx] = data2;
+    }
+
+    function initCustomFieldIds(settings){
+      return [settings.custom_field_id, settings.custom_field_id_2];
     }
 
     function init(metadata) {
       settings = metadata.settings
+      custom_field_ids = initCustomFieldIds(settings);
 
-      getTicketFieldInfoAndSearch(settings);
+      getTicketFieldInfoAndSearch(settings, custom_field_ids);
 
-      client.on('ticket.custom_field_' + settings.custom_field_id + '.changed', function() {
-        // console.log("TICKET custom field UPDATED");
-        settings = metadata.settings
+      // capturar evento de cambio de valor en alguno de los campos de filtrado
+      for (var i = 0; i<custom_field_ids.length; i++) {
+        custom_field_id = custom_field_ids[i];
+        if( custom_field_id != undefined ){
+          if( custom_field_id.includes(" ") ){
+            renderTitle("Incorrect field_id: '" + custom_field_id + "'. You can't include spaces in the field_id. Please, check APP settings." );
+            return true;
+          }
+          if( custom_field_id == 'requester' || custom_field_id == 'organization' ){
+            key = 'ticket.requester.id';
+          }else {
+            key = 'ticket.custom_field_' + custom_field_id ;
+          }
+          client.on(key + '.changed', function() {
+            //console.log("TICKET field UPDATED");
+            settings = metadata.settings
+            custom_field_ids = initCustomFieldIds(settings);
 
-        searchAndShow(settings);
-        return true;
-      });
+            searchAndShow(settings, custom_field_ids);
+            return true;
+          });
+
+        }
+      }
 
     }
 
