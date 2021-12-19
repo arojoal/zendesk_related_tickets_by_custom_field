@@ -180,7 +180,7 @@
         query = "";
       }
       if(query != "" && settings.show_only_open_tickets){
-        query = query + " status<solved"
+        query = query + " status<closed"
       }
       return query;
     }
