@@ -44,6 +44,13 @@
       "required": false ,
       "default": false,
       "secure": false
+    },
+    {
+      "name": "show_only_open_tickets",
+      "type": "checkbox",
+      "required": false ,
+      "default": false,
+      "secure": false
     }
   ],
   "version": "2.0",

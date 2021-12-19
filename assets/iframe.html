@@ -97,7 +97,7 @@
 
       var source = $("#tickets-template").html();
       var template = Handlebars.compile(source);
-      var data = { 'tickets': tickets, 'base_url': base_url, 'show_ticket_status': show_ticket_status, "show_ticket_updatedat": show_ticket_updatedat };
+      var data = { 'tickets': tickets, 'base_url': base_url, 'show_ticket_status': show_ticket_status, "show_ticket_updatedat": show_ticket_updatedat, "show_only_open_tickets": show_only_open_tickets };
       var html = template(data);
       $("#content").html(html);
       $('a.related-ticket-link').on('click', function(e) {
@@ -179,6 +179,9 @@
         renderTitle("UNSUPPORTED TICKET FIELD TYPE: " + ticket_field_info.ticket_field.type);
         query = "";
       }
+      if(query != "" && settings.show_only_open_tickets){
+        query = query + " status<solved"
+      }
       return query;
     }
 
@@ -222,6 +225,8 @@
       show_ticket_status = settings.show_ticket_status;
       show_ticket_updatedat = settings.show_ticket_updatedat;
       console.log("show_ticket_status: " + show_ticket_status);
+      show_only_open_tickets = settings.show_only_open_tickets;
+      console.log("show_only_open_tickets: " + show_only_open_tickets);
 
       var url = '/api/v2/search.json?query=' + query + ' order_by:updated_at sort:desc';
       if( url != ""){
