@@ -21,7 +21,7 @@
         "label": "Enable show each related ticket last update date and time"
       },
     "show_only_open_tickets": {
-        "label": "If enabled, it won't show tickets with status closed."
+        "label": "If enabled, it won't show tickets with status 'closed'."
       }
     }
   },
