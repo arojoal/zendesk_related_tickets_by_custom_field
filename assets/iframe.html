@@ -174,8 +174,11 @@
         query = search_value;
       }else if(ticket_field_info.ticket_field.type == "text" || ticket_field_info.ticket_field.type == "textarea" || ticket_field_info.ticket_field.type == "regexp"  || ticket_field_info.ticket_field.type == "integer" || ticket_field_info.ticket_field.type == "decimal"){
         query = "fieldvalue:" + search_value + ' type:ticket';
+      }else if(ticket_field_info.ticket_field.type == "lookup"){
+        query = "fieldvalue:" + search_value + ' type:ticket';
       }else {
         //console.log("UNSUPPORTED TICKECT FIELD TYPE: " + ticket_field_info.ticket_field.type)
+        //console.log("UNSUPPORTED TICKECT FIELD VALUE: " + search_value)
         renderTitle("UNSUPPORTED TICKET FIELD TYPE: " + ticket_field_info.ticket_field.type);
         query = "";
       }
