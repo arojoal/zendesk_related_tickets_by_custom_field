@@ -31,6 +31,9 @@
                   {{#if ../show_ticket_updatedat}}
                     ({{showDate updated_at}})
                   {{/if}}
+                  {{#if ../show_ticket_priority}}
+                    <span class="c-label c-label--pill ticket-priority-{{priority}}">{{priority}}</span>
+                  {{/if}}
                   </td>
               </tr>
 
@@ -97,7 +100,7 @@
 
       var source = $("#tickets-template").html();
       var template = Handlebars.compile(source);
-      var data = { 'tickets': tickets, 'base_url': base_url, 'show_ticket_status': show_ticket_status, "show_ticket_updatedat": show_ticket_updatedat, "show_only_open_tickets": show_only_open_tickets };
+      var data = { 'tickets': tickets, 'base_url': base_url, 'show_ticket_status': show_ticket_status, "show_ticket_updatedat": show_ticket_updatedat, "show_only_open_tickets": show_only_open_tickets, "show_ticket_priority": show_ticket_priority };
       var html = template(data);
       $("#content").html(html);
       $('a.related-ticket-link').on('click', function(e) {
@@ -228,6 +231,8 @@
       show_ticket_status = settings.show_ticket_status;
       show_ticket_updatedat = settings.show_ticket_updatedat;
       console.log("show_ticket_status: " + show_ticket_status);
+      show_ticket_priority = settings.show_ticket_priority;
+      console.log("show_ticket_priority: " + show_ticket_priority);
       show_only_open_tickets = settings.show_only_open_tickets;
       console.log("show_only_open_tickets: " + show_only_open_tickets);
 
@@ -240,9 +245,9 @@
         };
           client.get("ticket.id").then(function(data3) {
             shown_ticket_id = data3["ticket.id"];
-            //console.log("SHOWN_TICKET ID: " + shown_ticket_id);
+            console.log("SHOWN_TICKET ID: " + shown_ticket_id);
             client.request(fetchSelf).then(function(data2) {
-            //console.dir(data2);
+            console.dir(data2);
             var tickets = [];
             for(i=0; i<data2.results.length; i++){
               if(data2.results[i].id != shown_ticket_id){
@@ -250,8 +255,8 @@
                   tickets.push(data2.results[i]);
                   console.log(data2.results[i]);
                 }else{
-                  //console.log("NO ES TICKET: "); 
-                  //console.log(data2.results[i]);
+                  console.log("NO ES TICKET: "); 
+                  console.log(data2.results[i]);
                 }
               }
             }
