@@ -83,3 +83,45 @@ h3 {
 .c-label--pill {
     border-radius: 100px;
 }
+
+.ticket-status-new {
+  background-color: #f5ca00;
+}
+
+.ticket-status-open {
+  background-color: #e82a2a;
+}
+
+.ticket-status-pending {
+  background-color: #59bbe0;
+}
+
+.ticket-status-hold {
+  background-color: #000;
+}
+.ticket-status-solved {
+  background-color: #828282;
+}
+
+.ticket-status-closed {
+  background-color: #ddd;
+}
+
+.ticket-priority-na {
+  background-color: #5cb85c;
+}
+
+.ticket-priority-low {
+  background-color: #5cb85c;
+}
+
+.ticket-priority-normal {
+  background-color: #f0ad4e;
+}
+
+.ticket-priority-high {
+  background-color: #d9534f;
+}
+.ticket-priority-urgent {
+  background-color: #000;
+}

@@ -42,7 +42,7 @@
       "name": "show_ticket_priority",
       "type": "checkbox",
       "required": false ,
-      "default": false,
+      "default": true,
       "secure": false
     },
     {
@@ -54,6 +54,13 @@
     },
     {
       "name": "show_only_open_tickets",
+      "type": "checkbox",
+      "required": false ,
+      "default": false,
+      "secure": false
+    },
+    {
+      "name": "show_ticket_group_name",
       "type": "checkbox",
       "required": false ,
       "default": false,

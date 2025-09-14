@@ -20,6 +20,12 @@
     "show_ticket_updatedat": {
         "label": "Enable show each related ticket last update date and time"
       },
+    "show_ticket_priority": {
+        "label": "Enable show each related ticket's priority"
+      },
+    "show_ticket_group_name": {
+        "label": "Enable show each related ticket's group name" 
+      },
     "show_only_open_tickets": {
         "label": "If enabled, it won't show tickets with status 'closed'."
       }

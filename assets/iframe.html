@@ -24,15 +24,20 @@
           <tbody>
             {{#each tickets}}
               <tr>
-                <td width="80%"><span class="ticket-id">#{{id}}: </span><a class="related-ticket-link" data-ticket-id={{id}} href="#" data-url="{{../base_url}}/agent/tickets/{{id}}">{{subject}}</a>
+                <td width="80%">
+                  <!--span class="ticket-id">#{{id}}: </span-->
+                  <a class="related-ticket-link" data-ticket-id={{id}} href="#" data-url="{{../base_url}}/agent/tickets/{{id}}">#{{id}}: {{subject}}</a>
                   {{#if ../show_ticket_status}}
                     <span class="c-label c-label--pill ticket-status-{{status}}">{{status}}</span>
                   {{/if}}
-                  {{#if ../show_ticket_updatedat}}
-                    ({{showDate updated_at}})
-                  {{/if}}
                   {{#if ../show_ticket_priority}}
                     <span class="c-label c-label--pill ticket-priority-{{priority}}">{{priority}}</span>
+                  {{/if}}
+                  {{#if ../show_ticket_group_name}}
+                    <span id="ticket-group-{{id}}-{{group_id}}" class="c-label c-label--pill ticket-group-{{group_id}}"  style="display:none;">{{group_id}}</span>
+                  {{/if}}
+                  {{#if ../show_ticket_updatedat}}
+                    ({{showDate updated_at}})
                   {{/if}}
                   </td>
               </tr>
@@ -100,7 +105,7 @@
 
       var source = $("#tickets-template").html();
       var template = Handlebars.compile(source);
-      var data = { 'tickets': tickets, 'base_url': base_url, 'show_ticket_status': show_ticket_status, "show_ticket_updatedat": show_ticket_updatedat, "show_only_open_tickets": show_only_open_tickets, "show_ticket_priority": show_ticket_priority };
+      var data = { 'tickets': tickets, 'base_url': base_url, 'show_ticket_status': show_ticket_status, "show_ticket_updatedat": show_ticket_updatedat, "show_only_open_tickets": show_only_open_tickets, "show_ticket_priority": show_ticket_priority, "show_ticket_group_name": true, "preview_enabled": false };
       var html = template(data);
       $("#content").html(html);
       $('a.related-ticket-link').on('click', function(e) {
@@ -112,7 +117,35 @@
           if (ticketId ){
             client.invoke('routeTo', 'ticket', ticketId);
           }
+      }); 
+      if( show_ticket_group_name ){
+        // render group names
+        for(i=0; i<tickets.length; i++){
+          group_id = tickets[i].group_id;
+          if( group_id != null ){
+            renderTicketGroupName(tickets[i].id, group_id);
+          }
+        }
+      }
+    }
+
+    async function renderTicketGroupName(ticket_id,group_id){
+      var fetchSelf = {
+        url: '/api/v2/groups/' + group_id,
+        type: 'GET',
+        dataType: 'json'
+      };
+      //console.log("getting group_name for group_id:" + group_id);
+      name = await client.request(fetchSelf).then(function(group_data) {
+        console.log("group_data: " + group_data);
+        return group_data.group.name;
       });
+      //console.log("group_name: " + name);
+      const span = document.getElementById("ticket-group-" + ticket_id + "-" + group_id);
+      if ( span != null ) {
+        span.innerText = name;
+        span.style.display = 'inline';
+      } 
     }
 
     function renderTicket(ticket){
@@ -229,12 +262,15 @@
 
       // send query and show results
       show_ticket_status = settings.show_ticket_status;
-      show_ticket_updatedat = settings.show_ticket_updatedat;
       console.log("show_ticket_status: " + show_ticket_status);
+      show_ticket_updatedat = settings.show_ticket_updatedat;
+      console.log("show_ticket_updatedat: " + show_ticket_updatedat);
       show_ticket_priority = settings.show_ticket_priority;
       console.log("show_ticket_priority: " + show_ticket_priority);
       show_only_open_tickets = settings.show_only_open_tickets;
       console.log("show_only_open_tickets: " + show_only_open_tickets);
+      show_ticket_group_name = settings.show_ticket_group_name;
+      console.log("show_ticket_group_name: " + show_ticket_group_name);
 
       var url = '/api/v2/search.json?query=' + query + ' order_by:updated_at sort:desc';
       if( url != ""){
@@ -252,8 +288,12 @@
             for(i=0; i<data2.results.length; i++){
               if(data2.results[i].id != shown_ticket_id){
                 if(data2.results[i].subject != undefined ){
-                  tickets.push(data2.results[i]);
-                  console.log(data2.results[i]);
+                  ticket_data = data2.results[i];
+                  if (ticket_data.priority == null) {
+                    ticket_data.priority = "na";
+                  }
+                  tickets.push(ticket_data);
+                  console.log(ticket_data);
                 }else{
                   console.log("NO ES TICKET: "); 
                   console.log(data2.results[i]);
